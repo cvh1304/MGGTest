@@ -1,5 +1,8 @@
 ﻿namespace MessageBus.RabbitMQBus.Models;
 
+/// <summary>
+/// Settings RabbitMQ.
+/// </summary>
 public class RabbitSettings
 {
     public int RetryConnectCount { get; set; }

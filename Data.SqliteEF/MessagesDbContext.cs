@@ -2,6 +2,10 @@
 
 namespace Data.SqliteEF;
 
+/// <summary>
+/// EF database context for
+/// saving/reading not published <see cref="Message"/>.
+/// </summary>
 public class MessagesDbContext : DbContext
 {
     public DbSet<Message> Messages { get; set; }
@@ -12,6 +16,11 @@ public class MessagesDbContext : DbContext
             typeof(MessagesDbContext).Assembly);
     }
 
+    /// <summary>
+    /// Configure sqlite connection
+    /// to local file message.db.
+    /// </summary>
+    /// <param name="optionsBuilder"><inheritdoc/></param>
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         var connectionStringBuilder = new SqliteConnectionStringBuilder

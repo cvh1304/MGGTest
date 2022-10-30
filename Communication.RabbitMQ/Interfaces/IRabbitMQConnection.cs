@@ -2,6 +2,9 @@
 
 namespace MessageBus.RabbitMQBus.Interfaces;
 
+/// <summary>
+/// Connection contract.
+/// </summary>
 public interface IRabbitMQConnection : IDisposable
 {
     bool IsConnected { get; }

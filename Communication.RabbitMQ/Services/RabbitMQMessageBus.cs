@@ -13,6 +13,10 @@ using System.Text.Json;
 
 namespace MessageBus.RabbitMQBus.Services;
 
+/// <summary>
+/// Message bus service by RabbitMQ,
+/// for publishing or subscribe/consume messages.
+/// </summary>
 public class RabbitMQMessageBus : IMessageBus, IDisposable
 {
     private readonly IRabbitMQConnection _connection;
@@ -53,6 +57,12 @@ public class RabbitMQMessageBus : IMessageBus, IDisposable
         }
     }
 
+    /// <summary>
+    /// Publish message,
+    /// if connection not opened, method tried to connect;
+    /// if publish channel not created, method tried to create and configure it.
+    /// </summary>
+    /// <param name="message"></param>
     public void Publish(Message message)
     {
         if (!_connection.IsConnected)
@@ -142,6 +152,12 @@ public class RabbitMQMessageBus : IMessageBus, IDisposable
         }
     }
 
+    /// <summary>
+    /// Subscribe on message recieve event,
+    /// if connection not opened, method tried to connect;
+    /// if publish channel not created, method tried to create and configure it.
+    /// </summary>
+    /// <param name="proceedAction">Invoking action when message will be recieved.</param>
     public void Subscribe(Action<Message> proceedAction)
     {
         if (!_connection.IsConnected)
@@ -160,6 +176,12 @@ public class RabbitMQMessageBus : IMessageBus, IDisposable
         StartConsume(proceedAction);
     }
 
+    /// <summary>
+    /// Handler, when message published
+    /// and saved on disk by RabbitMQ.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
     private void OnBasicAck(
         object sender,
         BasicAckEventArgs args)
@@ -167,13 +189,31 @@ public class RabbitMQMessageBus : IMessageBus, IDisposable
         CleanNotConfirmedDictionary(args.DeliveryTag, args.Multiple);
     }
 
+    /// <summary>
+    /// Handler, if RabbitMQ can not
+    /// add to queue or save message.
+    /// Invoke <see cref="PublishErrorHandler"/>.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
     private void OnBasicNack(
         object sender,
         BasicNackEventArgs args)
     {
-        // TODO: publish error handler
+        _notConfirmedMessages.TryGetValue(args.DeliveryTag, out var msg);
+
+        PublishErrorHandler(msg);
+
+        CleanNotConfirmedDictionary(args.DeliveryTag, args.Multiple);
     }
 
+    /// <summary>
+    /// Remove messages having confirmed delivery tag
+    /// bellow given confirmedNumber
+    /// from dictionary of not confirmed messages.
+    /// </summary>
+    /// <param name="confirmedNumber"></param>
+    /// <param name="isMultiple"></param>
     private void CleanNotConfirmedDictionary(
         ulong confirmedNumber,
         bool isMultiple)
@@ -194,6 +234,10 @@ public class RabbitMQMessageBus : IMessageBus, IDisposable
         }
     }
 
+    /// <summary>
+    /// Creating subscription channel and configure it.
+    /// </summary>
+    /// <exception cref="IOException"></exception>
     private void CreateSubscribeChannel()
     {
         var channelIsCreated = _connection.TryCreateModel(
@@ -223,6 +267,10 @@ public class RabbitMQMessageBus : IMessageBus, IDisposable
             routingKey: _queueName);
     }
 
+    /// <summary>
+    /// Creating consumer and adding recieved handler.
+    /// </summary>
+    /// <param name="proceedAction"></param>
     private void StartConsume(
         Action<Message> proceedAction)
     {
@@ -252,6 +300,10 @@ public class RabbitMQMessageBus : IMessageBus, IDisposable
             arguments: GetQueueArgs());
     }
 
+    /// <summary>
+    /// Get queue args for configuring priority order in queue.
+    /// </summary>
+    /// <returns></returns>
     private Dictionary<string, object> GetQueueArgs()
     {
         Dictionary<string, object> queueArgs = new();

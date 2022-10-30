@@ -2,6 +2,9 @@
 
 namespace Data.SqliteEF.Configurations;
 
+/// <summary>
+/// EF configuration for <see cref="Message"/>.
+/// </summary>
 public class MessageConfiguration : IEntityTypeConfiguration<Message>
 {
     public void Configure(EntityTypeBuilder<Message> builder)

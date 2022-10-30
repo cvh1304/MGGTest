@@ -7,8 +7,22 @@ using RabbitMQ.Client;
 
 namespace MessageBus.RabbitMQBus.Extensions;
 
+/// <summary>
+/// Helper for register
+/// into <see cref="IServiceCollection"/>
+/// services for using RabbitMQBus.
+/// </summary>
 public static class MessageBusInjectionHelper
 {
+    /// <summary>
+    /// Register
+    /// <see cref="RabbitMQConnection"/> - singleton,
+    /// with <see cref="ConnectionFactory"/> having giving settings;
+    /// Register <see cref="RabbitMQMessageBus"/> - singleton.
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="settings">Rabbit settings.</param>
+    /// <returns></returns>
     public static IServiceCollection AddRabitMQMessageBus(
         this IServiceCollection services,
         RabbitSettings settings)

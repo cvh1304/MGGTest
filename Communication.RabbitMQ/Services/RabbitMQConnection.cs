@@ -9,6 +9,10 @@ using System.Net.Sockets;
 
 namespace MessageBus.RabbitMQBus.Services;
 
+/// <summary>
+/// RabbitMQ connection service,
+/// managing <see cref="IConnection"/> and <see cref="IModel"/>.
+/// </summary>
 public class RabbitMQConnection : IRabbitMQConnection
 {
     private readonly IConnectionFactory _connectionFactory;
