@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "SystemB": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "development"
+      }
+    }
+  }
+}
